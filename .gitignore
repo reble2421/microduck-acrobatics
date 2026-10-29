@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+# rendered videos and local runs are not part of the repository
+*.mp4
+results/clips/
+results/final/
+results/routine/*video*/
+external/
+logs/

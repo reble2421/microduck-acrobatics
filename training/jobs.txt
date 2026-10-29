@@ -1,0 +1,22 @@
+# このリポジトリの方策を作った学習の一覧。上から順に1本ずつ（bash training/night_queue.sh training/jobs.txt）。
+# 書式: タスクID [追加オプション]    （# から後ろはコメント）
+# どれも RTX 4060 Laptop、2048体の並列、1反復 約2.7〜3.3秒。
+#
+# --- 前作（この課題の前に学習したもの。参考として載せる） ---
+# 前作の逆立ち（policies/headstand.onnx）と後転（policies/backroll.onnx）は、それぞれ最終時点 model_9999
+# （10,000反復）。逆立ちの公開版の設定は、ヘッドスピンの土台として整理したもので、前作の学習時の設定とは
+# 一部異なる（ヘッドスピン以降の学習の設定が、実際に使ったものと同じであることは確認済み）。
+
+# 1) ヘッドスピン：前作の逆立ち（model_9999）の続きから 3,000反復 -> policies/headspin.onnx
+Mjlab-HeadSpin-Flat-MicroDuck --env.scene.num-envs 2048 --agent.max-iterations 3000 --agent.resume True --agent.load-run .*_microduck_headstand --agent.load-checkpoint model_9999.pt --agent.run-name headspin_from_v1
+
+# 2) 遅れに強いヘッドスピン：1) の最終時点（model_12998）の続きから 2,000反復 -> policies/headspin_robust.onnx
+Mjlab-HeadSpinRobust-Flat-MicroDuck --env.scene.num-envs 2048 --agent.max-iterations 2000 --agent.resume True --agent.load-run .*_headspin_from_v1 --agent.load-checkpoint model_12998.pt --agent.run-name headspin_robust_v1
+
+# 3) 遅れに強い後転：前作の後転（model_9999）の続きから 3,000反復 -> policies/backroll_robust.onnx
+Mjlab-BackRollRobust-Flat-MicroDuck --env.scene.num-envs 2048 --agent.max-iterations 3000 --agent.resume True --agent.load-run .*_microduck_backroll --agent.load-checkpoint model_9999.pt --agent.run-name backroll_robust
+
+# 4) 速さの限界を探る追加の学習：2) の最終時点（model_14997）の続きから 各2,500反復
+#    -> policies/headspin_fast6.onnx, policies/headspin_fast5.onnx（連続技には使っていない）
+Mjlab-HeadSpinFast6-Flat-MicroDuck --env.scene.num-envs 2048 --agent.max-iterations 2500 --agent.resume True --agent.load-run .*_headspin_robust_v1 --agent.load-checkpoint model_14997.pt --agent.run-name headspin_fast6
+Mjlab-HeadSpinFast5-Flat-MicroDuck --env.scene.num-envs 2048 --agent.max-iterations 2500 --agent.resume True --agent.load-run .*_headspin_robust_v1 --agent.load-checkpoint model_14997.pt --agent.run-name headspin_fast5

@@ -1,0 +1,34 @@
+{
+  "scenario": "backroll",
+  "description": "backward roll, the policy alone for its 5 s training episode",
+  "policies": {
+    "backroll": "policies/backroll.onnx"
+  },
+  "trials": 50,
+  "successes": 41,
+  "success_rate": 0.82,
+  "wilson95": [
+    0.692,
+    0.9023
+  ],
+  "dr": "train",
+  "delay": "none",
+  "push_speed": 0.0,
+  "push_window": null,
+  "handoff_s": null,
+  "seed": 0,
+  "failed_trials": [
+    3,
+    6,
+    9,
+    13,
+    19,
+    26,
+    32,
+    35,
+    40
+  ],
+  "videos": [],
+  "wall_time_s": 22.7,
+  "created": "2026-10-02T10:01:04"
+}

@@ -1,0 +1,59 @@
+{
+  "stages": [
+    "walk",
+    "stop",
+    "roll",
+    "recover",
+    "headstand",
+    "spin1",
+    "spin2",
+    "spin_stop",
+    "release",
+    "standup"
+  ],
+  "policies": {
+    "walk": "alpha_walking.onnx",
+    "backroll": "policies/backroll_robust.onnx",
+    "headstand": "policies/headspin_robust.onnx",
+    "stand": "alpha_stand.onnx"
+  },
+  "trials": 50,
+  "completed": 50,
+  "wilson95": [
+    0.9286,
+    1.0
+  ],
+  "reached": {
+    "walk": 50,
+    "stop": 50,
+    "recover": 50,
+    "headstand": 50,
+    "spin1": 50,
+    "spin2": 50,
+    "spin_stop": 50,
+    "release": 50,
+    "standup": 50
+  },
+  "passed": {
+    "walk": 50,
+    "stop": 50,
+    "recover": 50,
+    "headstand": 50,
+    "spin1": 50,
+    "spin2": 50,
+    "spin_stop": 50,
+    "release": 50,
+    "standup": 50
+  },
+  "failed_trials": [],
+  "videos": [
+    "routine_trial000_OK.mp4"
+  ],
+  "dr": "train",
+  "delay": "train",
+  "roll_s": 2.0,
+  "recover_s": 2.0,
+  "release_s": 1.0,
+  "spin": "4:4,-4:4",
+  "wall_time_s": 329.1
+}

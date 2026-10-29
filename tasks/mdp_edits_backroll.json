@@ -1,0 +1,47 @@
+[
+ [
+  "_HEAD_LATCH_LO = math.radians(20.0)\n_HEAD_LATCH_HI = math.radians(170.0)\n",
+  "_HEAD_LATCH_LO = math.radians(20.0)\n_HEAD_LATCH_HI = math.radians(170.0)\n\n\n# [backroll] Roll direction and head-latch window are per ENV, written by\n# reset_roulade_state (defaults = the forward roulade, unchanged). A backward\n# roll plants the head late in the roll, so its latch window moves.\ndef _roulade_sign(env) -> float:\n    return _ROULADE_FWD_SIGN * getattr(env, \"_roulade_direction\", 1.0)\n\n\ndef _roulade_latch_window(env) -> tuple:\n    return getattr(env, \"_roulade_latch_window\", (_HEAD_LATCH_LO, _HEAD_LATCH_HI))\n",
+  1
+ ],
+ [
+  "_ROULADE_FWD_SIGN * asset.data.root_link_ang_vel_b[:, 1]",
+  "_roulade_sign(env) * asset.data.root_link_ang_vel_b[:, 1]",
+  2
+ ],
+ [
+  "            in_window = (env._roulade_accum > _HEAD_LATCH_LO) & (\n                env._roulade_accum < _HEAD_LATCH_HI\n            )\n",
+  "            latch_lo, latch_hi = _roulade_latch_window(env)  # [backroll]\n            in_window = (env._roulade_accum > latch_lo) & (env._roulade_accum < latch_hi)\n",
+  1
+ ],
+ [
+  "    tuck_factor_range: tuple = (0.3, 1.0),\n    joint_noise_std: float = 0.0,\n):\n    \"\"\"Reset to a standing start or a mid-roll state (reverse curriculum).\n",
+  "    tuck_factor_range: tuple = (0.3, 1.0),\n    joint_noise_std: float = 0.0,\n    direction: float = 1.0,\n    head_latch_lo: float = _HEAD_LATCH_LO,\n    head_latch_hi: float = _HEAD_LATCH_HI,\n):\n    \"\"\"Reset to a standing start or a mid-roll state (reverse curriculum).\n\n    [backroll] ``direction``: +1 = forward roll (the roulade, default), -1 =\n    backward roll. Mid-roll spawns are pitched that way with angular momentum\n    that way, and the accumulator counts rotation in that direction.\n    ``head_latch_lo/hi``: progress window in which head-top contact latches.\n",
+  1
+ ],
+ [
+  "    asset: Entity = env.scene[asset_cfg.name]\n    accum, max_accum, paid = _roulade_state(env)\n",
+  "    asset: Entity = env.scene[asset_cfg.name]\n    accum, max_accum, paid = _roulade_state(env)\n    env._roulade_direction = float(direction)  # [backroll]\n    env._roulade_latch_window = (float(head_latch_lo), float(head_latch_hi))\n",
+  1
+ ],
+ [
+  "    pitch = torch.where(is_mid, mid_pitch, pitch)\n",
+  "    pitch = torch.where(is_mid, direction * mid_pitch, pitch)  # [backroll] signed\n",
+  1
+ ],
+ [
+  "        env.sim.data.qvel[mid_env_ids, 4] = _ROULADE_FWD_SIGN * omega\n",
+  "        env.sim.data.qvel[mid_env_ids, 4] = _ROULADE_FWD_SIGN * direction * omega  # [backroll]\n",
+  1
+ ],
+ [
+  "        env.sim.data.qvel[stand_env_ids, 0] = vx * torch.cos(yaw_s)\n        env.sim.data.qvel[stand_env_ids, 1] = vx * torch.sin(yaw_s)\n",
+  "        env.sim.data.qvel[stand_env_ids, 0] = direction * vx * torch.cos(yaw_s)  # [backroll]\n        env.sim.data.qvel[stand_env_ids, 1] = direction * vx * torch.sin(yaw_s)\n",
+  1
+ ],
+ [
+  "    env._roulade_head_latch[env_ids] = is_mid\n",
+  "    env._roulade_head_latch[env_ids] = is_mid & (mid_pitch >= head_latch_lo)  # [backroll]\n",
+  1
+ ]
+]

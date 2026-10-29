@@ -1,0 +1,30 @@
+{
+  "scenario": "backroll_handoff",
+  "description": "backward roll for handoff_s, then the stand policy takes over (runtime)",
+  "policies": {
+    "backroll": "policies/backroll.onnx",
+    "stand": "alpha_stand.onnx"
+  },
+  "trials": 20,
+  "successes": 15,
+  "success_rate": 0.75,
+  "wilson95": [
+    0.5313,
+    0.8881
+  ],
+  "dr": "train",
+  "push_speed": 0.0,
+  "push_window": null,
+  "handoff_s": 1.0,
+  "seed": 0,
+  "failed_trials": [
+    2,
+    4,
+    7,
+    12,
+    17
+  ],
+  "videos": [],
+  "wall_time_s": 9.6,
+  "created": "2026-10-02T09:45:10"
+}

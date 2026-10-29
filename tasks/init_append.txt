@@ -1,0 +1,45 @@
+
+
+# [acrobatics] Headstand, backward roll, headspin and their latency-robust / fast versions
+# (microduck-acrobatics, added by installers/setup_acrobatics.py).
+from .microduck_backroll_env_cfg import (  # noqa: E402
+    MicroduckBackrollRlCfg,
+    make_microduck_backroll_env_cfg,
+)
+from .microduck_headspin_env_cfg import (  # noqa: E402
+    MicroduckHeadSpinRlCfg,
+    make_microduck_headspin_env_cfg,
+)
+from .microduck_headspin_fast_env_cfg import (  # noqa: E402
+    MicroduckHeadSpinFast5RlCfg,
+    MicroduckHeadSpinFast6RlCfg,
+    make_microduck_headspin_fast5_env_cfg,
+    make_microduck_headspin_fast6_env_cfg,
+)
+from .microduck_headstand_env_cfg import (  # noqa: E402
+    MicroduckHeadstandRlCfg,
+    make_microduck_headstand_env_cfg,
+)
+from .microduck_robust_env_cfg import (  # noqa: E402
+    MicroduckBackrollRobustRlCfg,
+    MicroduckHeadSpinRobustRlCfg,
+    make_microduck_backroll_robust_env_cfg,
+    make_microduck_headspin_robust_env_cfg,
+)
+
+for _task_id, _make, _rl in (
+    ("Mjlab-HeadStand-Flat-MicroDuck", make_microduck_headstand_env_cfg, MicroduckHeadstandRlCfg),
+    ("Mjlab-BackRoll-Flat-MicroDuck", make_microduck_backroll_env_cfg, MicroduckBackrollRlCfg),
+    ("Mjlab-HeadSpin-Flat-MicroDuck", make_microduck_headspin_env_cfg, MicroduckHeadSpinRlCfg),
+    ("Mjlab-BackRollRobust-Flat-MicroDuck", make_microduck_backroll_robust_env_cfg, MicroduckBackrollRobustRlCfg),
+    ("Mjlab-HeadSpinRobust-Flat-MicroDuck", make_microduck_headspin_robust_env_cfg, MicroduckHeadSpinRobustRlCfg),
+    ("Mjlab-HeadSpinFast5-Flat-MicroDuck", make_microduck_headspin_fast5_env_cfg, MicroduckHeadSpinFast5RlCfg),
+    ("Mjlab-HeadSpinFast6-Flat-MicroDuck", make_microduck_headspin_fast6_env_cfg, MicroduckHeadSpinFast6RlCfg),
+):
+    register_mjlab_task(
+        task_id=_task_id,
+        env_cfg=_make(),
+        play_env_cfg=_make(play=True),
+        rl_cfg=_rl,
+        runner_cls=MicroduckOnPolicyRunner,
+    )
