@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Report figures, rebuilt from the result files (results/...). One PNG per figure.
 
-    python bench/figures.py [NAME ...]          (needs matplotlib; imageio for routine_strip)
+    python bench/figures.py [NAME ...]          (needs matplotlib; imageio for routine_strip, headstand_strip)
 
 Writes results/figures/<name>.png. Without names, every figure is drawn. Each figure
 reads only saved results; nothing is simulated here.
@@ -204,7 +204,7 @@ def training():
                      transform=axes[0].get_xaxis_transform())
     axes[0].set_ylim(bottom=0)
     axes[1].set_ylim(0, 1.05)
-    axes[1].set_xlabel("学習の反復回数（前作の逆立ち 9,999回の続きから）")
+    axes[1].set_xlabel("学習の反復回数（逆立ち 9,999回の続きから）")
     axes[0].set_title("ヘッドスピンの学習の推移（50反復の移動平均、2048体を並列に学習）")
     fig.text(0.99, -0.03, f"各学習の開始直後 {SKIP} 反復は、試行が一巡しておらず記録の値が小さく出るため除いた",
              ha="right", va="top", fontsize=9, color=fs.INK2)
@@ -212,6 +212,31 @@ def training():
 
 
 SKIP = 60
+
+
+# ---- 5b. the same headspin task from the headstand policy vs from random weights ------------
+
+def init_compare():
+    tags = ["headspin_track", "headstand_hold"]
+    runs = [("headspin", "逆立ちの方策から（+3,000反復）"), ("headspin_scratch", "ランダムな重みから（8,000反復）")]
+    data = [(_scalars(run, tags), label) for run, label in runs]
+    fig, axes = plt.subplots(2, 1, figsize=(8, 4.8), sharex=True, gridspec_kw={"hspace": 0.12})
+    names = {"headspin_track": "回転の追従の報酬", "headstand_hold": "逆立ちを保つ報酬"}
+    for ax, tag in zip(axes, tags):
+        fs.grid_y(ax)
+        for (sc, label), col in zip(data, fs.SERIES):
+            first = min(sc[tag])
+            pts = _smooth({k - first: v for k, v in sc[tag].items() if k >= first + SKIP})
+            ax.plot([p[0] for p in pts], [p[1] for p in pts], color=col, lw=2, label=label)
+        ax.set_ylabel(names[tag])
+    axes[0].set_ylim(bottom=min(0, axes[0].get_ylim()[0]))
+    axes[1].set_ylim(0, 1.05)
+    axes[0].legend(loc="lower right", fontsize=9.5)
+    axes[1].set_xlabel("ヘッドスピンの学習を始めてからの反復回数")
+    axes[0].set_title("初期化の比較：同じタスク（報酬・指令）で、学習の始め方を変える（50反復の移動平均）")
+    fig.text(0.99, -0.03, f"各学習の開始直後 {SKIP} 反復は、試行が一巡しておらず記録の値が小さく出るため除いた",
+             ha="right", va="top", fontsize=9, color=fs.INK2)
+    save(fig, "init_compare")
 
 
 # ---- 6. system overview: train -> ONNX policies -> evaluate (and back) ---------------------
@@ -296,8 +321,39 @@ def delay_sweep():
     print(f"copied {src} -> {OUT / 'delay_sweep.png'}")
 
 
+# ---- 9. the headstand entry as a strip of frames ----------------------------------------
+
+HS_STRIP = [(0.0, "① 立った姿勢"), (0.16, "② 前に倒れる"), (0.32, "③ 頭頂が着く"),
+            (0.64, "④ 足を上げる"), (2.0, "⑤ 頭頂だけで立つ"), (11.5, "⑥ 保ち続ける")]
+
+
+def headstand_strip():
+    # videos are not kept in the repository: render this one first with
+    # python bench/battery.py headstand -n 20 --videos 1 --policy headstand=policies/headstand.onnx \
+    #     --out results/headstand_20261001/headstand
+    import imageio.v2 as imageio
+    import numpy as np
+    video = RES / "headstand_20261001" / "headstand" / "headstand_trial000_OK.mp4"
+    reader = imageio.get_reader(str(video))
+    fps = reader.get_meta_data()["fps"]
+    fig, axes = plt.subplots(1, len(HS_STRIP), figsize=(10, 2.5), gridspec_kw={"wspace": 0.04})
+    for ax, (t, label) in zip(axes, HS_STRIP):
+        frame = np.asarray(reader.get_data(int(round(t * fps))))
+        h, w = frame.shape[:2]
+        ax.imshow(frame[int(0.23 * h):int(0.75 * h), int(0.36 * w):int(0.70 * w)])   # the robot only
+        ax.set_xticks([])
+        ax.set_yticks([])
+        for s in ax.spines.values():
+            s.set_visible(False)
+        ax.set_title(label, fontsize=10, loc="center", color=fs.INK)
+        ax.set_xlabel(f"{t:g}秒", fontsize=9, color=fs.INK2)
+    reader.close()
+    save(fig, "headstand_strip")
+
+
 FIGURES = {"tracking": tracking, "routine": routine, "backroll": backroll, "handoff": handoff,
-           "training": training, "system": system, "routine_strip": routine_strip, "delay_sweep": delay_sweep}
+           "training": training, "init_compare": init_compare, "system": system, "routine_strip": routine_strip,
+           "delay_sweep": delay_sweep, "headstand_strip": headstand_strip}
 
 if __name__ == "__main__":
     fs.apply()

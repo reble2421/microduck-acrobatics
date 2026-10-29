@@ -27,36 +27,41 @@ BG = (20, 22, 28)
 INK, INK2 = (255, 255, 255), (200, 200, 192)
 
 CLIPS = RES / "clips"
+# Storyboard: the routine first; then only the moves that are NOT in the official
+# Microduck policies (backroll, headstand entry, headspin), each with what was done to get it.
 SCENES = [
-    dict(kind="title", seconds=8.0, bg=(CLIPS / "headspin_solo.mp4", 5.0)),
-    dict(kind="figure", src=RES / "figures" / "system.png", seconds=12.0, subs=[
-        (0.0, "全長約25cmの二足ロボット Microduck。実機はなく、シミュレーションだけで取り組みました。"),
-        (6.0, "GPUで2048体を並列に強化学習し、別の物理エンジンで確かめ、見つけた弱点を学習に戻します。")]),
-    dict(kind="clip", src=CLIPS / "learning_progress.mp4", start=0.0, end=8.5, subs=[
-        (0.0, "同じ「左回り」の指令でも、学習が進むと回れるようになります。")]),
-    dict(kind="clip", src=CLIPS / "headspin_solo.mp4", start=0.0, end=16.5, subs=[
-        (0.0, "新しい技①　ヘッドスピン：指令で回り、指令で止まる。"),
-        (8.0, "左右どちらにも毎秒4rad（約1.5秒で1回転）。")]),
     dict(kind="clip", src=RES / "routine" / "spin_14997_w4_video720" / "routine_trial000_OK.mp4",
          start=0.0, end=28.5, subs=[
-             (0.0, "連続技：方策（学習した制御）を切り替えて、8つの段をつなぎます。"),
-             (4.5, "新しい技②　後転（指令の遅れに強く学習し直した版）。"),
-             (8.5, "逆立ちに入り、左右にヘッドスピン。"),
-             (19.5, "止まって力を抜き、倒れてから起き上がる。")]),
-    dict(kind="figure", src=RES / "figures" / "routine.png", seconds=8.0, subs=[
-        (0.0, "50回試して、50回とも最後まで成功（モーター指令の遅れ15〜30ms）。")]),
+             (0.0, "Microduck の連続技（強化学習・シミュレーション・すべて等速）"),
+             (3.0, "歩く・止まる：公式の方策"),
+             (4.5, "★ 後転：公式にない動き（今回学習）"),
+             (8.5, "★ 逆立ち → ヘッドスピン：公式にない動き（今回学習）"),
+             (19.5, "★ 指令で回転を止める"),
+             (21.5, "倒れてから起き上がる：公式の方策")]),
+    dict(kind="figure", src=RES / "figures" / "routine.png", seconds=6.0, subs=[
+        (0.0, "この流れを50回試して、50回とも最後まで成功（モーター指令の遅れ15〜30ms）。")]),
+    dict(kind="card", seconds=2.5, title="ポイント①　ヘッドスピン", sub="指令した速さで回り、指令で止まる"),
+    dict(kind="clip", src=CLIPS / "headspin_solo.mp4", start=0.0, end=16.5, subs=[
+        (0.0, "工夫：報酬は「指令した回転の速さ」との差で採点。"),
+        (5.5, "工夫：重心が動くと報酬を払わない（その場で回る）。止まれの指令では回転に罰。"),
+        (11.5, "左右どちらにも毎秒4rad（約1.5秒で1回転）。")]),
     dict(kind="clip", src=RES / "headspin" / "spin_tracking_14997_w45.mp4", start=0.0, end=16.5, subs=[
-        (0.0, "指令どおりの速さで回る：点線が指令、実線が実際の回転。"),
-        (8.0, "毎秒4〜5radの指令に対して、実際は0.96〜1.10倍。")]),
+        (0.0, "点線が指令、実線が実際の回転。指令を切り替えても、ついていく。"),
+        (8.0, "毎秒4〜5radの指令に対して、実際は指令の0.96〜1.10倍。")]),
+    dict(kind="clip", src=CLIPS / "learning_progress.mp4", start=0.0, end=8.5, subs=[
+        (0.0, "逆立ちから学習を続けると、2,000反復で回り始める（同じ指令で比較）。")]),
+    dict(kind="card", seconds=2.5, title="ポイント②　後転を「遅れに強く」",
+         sub="別の物理エンジンで弱点を見つけ、学習し直す"),
     dict(kind="clip", src=CLIPS / "backroll_compare.mp4", start=0.0, end=7.0, subs=[
-        (0.0, "後転は学習の条件を見直し（指令の遅れ0〜30ms）、遅れがなくても1回転で着地できるようにしました。")]),
+        (0.0, "工夫：学習とは別の物理エンジンで、条件を変えて50回ずつ試験。"),
+        (3.5, "指令の遅れがないと乱れる弱点を見つけ、遅れの幅を0〜30msに広げて学習し直した。")]),
     dict(kind="figure", src=RES / "figures" / "backroll.png", seconds=6.0, subs=[
         (0.0, "遅れなしで、きれいに転がれた回数：17/50 → 50/50。")]),
-    dict(kind="clip", src=CLIPS / "delay_compare.mp4", start=0.0, end=9.5, subs=[
-        (0.0, "弱点：ヘッドスピンは、モーター指令の遅れがないと回りきれません。")]),
-    dict(kind="figure", src=RES / "figures" / "delay_sweep.png", seconds=8.0, subs=[
-        (0.0, "遅れ10ms以上なら合格、5ms以下では回れない。実機で確かめるときの課題です。")]),
-    dict(kind="summary", seconds=14.0),
+    dict(kind="card", seconds=10.0, title="今後：実機で動かす", sub="シミュレーションで確かめた手順を、そのまま実機へ",
+         lines=["実機のサーボの指令の遅れを測り、学習の条件をそれに合わせる",
+                "まず後転と起き上がりから実機で確かめ、次にヘッドスピンへ",
+                "頭の接地面の摩擦や床の違いにも強くなるよう、条件を広げて学習する"]),
+    dict(kind="summary", seconds=12.0),
 ]
 
 
@@ -124,14 +129,30 @@ def title_card(bg):
     return canvas
 
 
+def section_card(title, sub, lines=()):
+    """A divider between the parts of the video; with lines, a short list under it."""
+    canvas = Image.new("RGB", (W, H), BG)
+    dr = ImageDraw.Draw(canvas)
+    y0 = 300 if not lines else 150
+    dr.rectangle([90, y0, 98, y0 + 120], fill=(57, 135, 229))
+    dr.text((130, y0), title, font=font(FONT_B, 56), fill=INK)
+    dr.text((132, y0 + 86), sub, font=font(FONT_R, 32), fill=INK2)
+    y = y0 + 190
+    for line in lines:
+        dr.text((140, y), "●", font=font(FONT_B, 26), fill=(57, 135, 229))
+        dr.text((180, y - 2), line, font=font(FONT_B, 30), fill=INK)
+        y += 64
+    return canvas
+
+
 def summary_card(github):
     canvas = Image.new("RGB", (W, H), BG)
     dr = ImageDraw.Draw(canvas)
     dr.text((90, 70), "まとめ", font=font(FONT_B, 48), fill=INK)
-    items = ["ヘッドスピン：指令どおりの速さ（0.96〜1.10倍）で回り、指令で止まる",
-             "連続技：歩く→後転→逆立ち→ヘッドスピン→起き上がる、50回中50回成功",
-             "後転：指令の遅れがなくても、きれいな後転 17/50 → 50/50",
-             "弱点：遅れ5ms以下では回れない（実機で確かめるときの課題）"]
+    items = ["★ ヘッドスピン：指令どおりの速さ（0.96〜1.10倍）で回り、指令で止まる",
+             "★ 後転：遅れに強く学習し直し、遅れなしでも 17/50 → 50/50",
+             "連続技：公式の「歩く・起き上がる」とつないで、50回中50回成功",
+             "今後：実機のサーボに条件を合わせて、実機で動かす"]
     y = 170
     for it in items:
         dr.text((110, y), "●", font=font(FONT_B, 28), fill=(57, 135, 229))
@@ -155,8 +176,13 @@ def main():
     total = 0
     with imageio.get_writer(str(args.out), fps=FPS, macro_block_size=8, quality=8) as wr:
         for sc in SCENES:
-            if sc["kind"] in ("title", "summary"):
-                img = title_card(sc["bg"]) if sc["kind"] == "title" else summary_card(args.github)
+            if sc["kind"] in ("title", "summary", "card"):
+                if sc["kind"] == "title":
+                    img = title_card(sc["bg"])
+                elif sc["kind"] == "card":
+                    img = section_card(sc["title"], sc["sub"], sc.get("lines", ()))
+                else:
+                    img = summary_card(args.github)
                 frame = np.asarray(img)
                 for _ in range(int(sc["seconds"] * FPS)):
                     wr.append_data(frame)

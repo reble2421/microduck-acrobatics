@@ -61,7 +61,7 @@ PRESETS = {
     "learning_progress": dict(
         title="学習の進み方：同じ指令（左回り 毎秒3rad）を出したとき", start="headstand", seed=0, layout=(2, 2),
         camera=dict(distance=0.6, elevation=-18.0, azimuth=135.0), spin_readout=True,
-        panels=[dict(label="学習前（前作の逆立ち）", policies={"headstand": POL / "headstand.onnx"},
+        panels=[dict(label="学習前（逆立ち）", policies={"headstand": POL / "headstand.onnx"},
                      delay=4),
                 dict(label="1,000反復", policies={"headstand": POL / "checkpoints" / "headspin_it1000.onnx"},
                      delay=4),

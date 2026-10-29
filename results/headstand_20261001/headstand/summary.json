@@ -1,0 +1,25 @@
+{
+  "scenario": "headstand",
+  "description": "from standing, get up on the head top and hold still (zero command)",
+  "policies": {
+    "headstand": "policies/headstand.onnx"
+  },
+  "trials": 20,
+  "successes": 20,
+  "success_rate": 1.0,
+  "wilson95": [
+    0.8389,
+    1.0
+  ],
+  "dr": "train",
+  "push_speed": 0.0,
+  "push_window": null,
+  "handoff_s": null,
+  "seed": 0,
+  "failed_trials": [],
+  "videos": [
+    "headstand_trial000_OK.mp4"
+  ],
+  "wall_time_s": 13.8,
+  "created": "2026-10-01T08:59:41"
+}
